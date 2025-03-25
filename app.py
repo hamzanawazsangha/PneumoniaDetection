@@ -10,6 +10,10 @@ import seaborn as sns
 import pandas as pd
 import gdown
 
+# Initialize session state for developer results visibility
+if 'show_dev_results' not in st.session_state:
+    st.session_state.show_dev_results = False
+
 # Model loading with error handling
 model_url = "https://drive.google.com/uc?id=165LXJNpFIyDKqK6ZJJ8j_XDuuDMKr2kp"
 model_path = "pneumoniamodel.h5"
@@ -95,9 +99,6 @@ st.markdown("""
         background-color: #e8f5e9;
         border-left: 5px solid #2a9d8f;
     }
-    #dev-results {
-        display: none;
-    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -146,22 +147,16 @@ if uploaded_file is not None and model is not None:
             **Note:** This is an AI-assisted diagnosis tool. Always consult with a healthcare professional 
             for medical diagnosis and treatment.
             """)
-    except Exception as e:
-        st.error(f"Error making prediction: {str(e)}")
 
-# Developer section
+# Developer section toggle button
 if roc_data is not None and conf_matrix is not None and report_df is not None:
-    st.markdown(
-        '<div class="developer-section" onclick="toggleDevResults()">'
-        '👨💻 Developer Results</div>', 
-        unsafe_allow_html=True
-    )
+    if st.button("👨💻 Developer Results"):
+        st.session_state.show_dev_results = not st.session_state.show_dev_results
 
-    # Hidden developer results (initially hidden via CSS)
-    st.markdown('<div id="dev-results">', unsafe_allow_html=True)
-    
+# Developer results section (only shown if toggled)
+if st.session_state.show_dev_results:
     try:
-        # ROC Curve with your saved format
+        # ROC Curve
         st.subheader("ROC Curve")
         plt.figure(figsize=(10, 8))
         plt.plot(roc_data["fpr"], roc_data["tpr"], 
@@ -196,19 +191,3 @@ if roc_data is not None and conf_matrix is not None and report_df is not None:
         st.dataframe(report_df.style.background_gradient(cmap='Blues'))
     except Exception as e:
         st.error(f"Could not display classification report: {str(e)}")
-
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    # JavaScript to handle the toggle
-    st.markdown("""
-    <script>
-    function toggleDevResults() {
-        var devResults = document.getElementById('dev-results');
-        if (devResults.style.display === 'none') {
-            devResults.style.display = 'block';
-        } else {
-            devResults.style.display = 'none';
-        }
-    }
-    </script>
-    """, unsafe_allow_html=True)
