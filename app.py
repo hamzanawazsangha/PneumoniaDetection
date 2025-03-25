@@ -107,7 +107,7 @@ uploaded_file = st.file_uploader("Choose an X-ray image...", type=["jpg", "jpeg"
 if uploaded_file is not None and model is not None:
     # Display the uploaded image
     image = Image.open(uploaded_file).convert('RGB')
-    st.image(image, caption='Uploaded X-ray', use_column_width=True)
+    st.image(image, caption='Uploaded X-ray', use_container_width=True)  # Updated parameter
     
     # Preprocess the image
     img = image.resize((256, 256))
