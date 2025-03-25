@@ -146,19 +146,21 @@ if uploaded_file is not None and model is not None:
             **Note:** This is an AI-assisted diagnosis tool. Always consult with a healthcare professional 
             for medical diagnosis and treatment.
             """)
+    except Exception as e:
+        st.error(f"Error making prediction: {str(e)}")
 
 # Developer section
-try:
-    if roc_data is not None and conf_matrix is not None and report_df is not None:
-        st.markdown(
-            '<div class="developer-section" onclick="toggleDevResults()">'
-            '👨💻 Developer Results</div>', 
-            unsafe_allow_html=True
-        )
+if roc_data is not None and conf_matrix is not None and report_df is not None:
+    st.markdown(
+        '<div class="developer-section" onclick="toggleDevResults()">'
+        '👨💻 Developer Results</div>', 
+        unsafe_allow_html=True
+    )
 
-        # Hidden developer results (initially hidden via CSS)
-        st.markdown('<div id="dev-results">', unsafe_allow_html=True)
-        
+    # Hidden developer results (initially hidden via CSS)
+    st.markdown('<div id="dev-results">', unsafe_allow_html=True)
+    
+    try:
         # ROC Curve with your saved format
         st.subheader("ROC Curve")
         plt.figure(figsize=(10, 8))
@@ -173,7 +175,10 @@ try:
         plt.title('Receiver Operating Characteristic (ROC) Curve')
         plt.legend(loc="lower right")
         st.pyplot(plt)
+    except Exception as e:
+        st.error(f"Could not plot ROC curve: {str(e)}")
 
+    try:
         # Confusion Matrix
         st.subheader("Confusion Matrix")
         plt.figure()
@@ -182,25 +187,28 @@ try:
                    yticklabels=['Actual Normal', 'Actual Pneumonia'])
         plt.title('Confusion Matrix')
         st.pyplot(plt)
+    except Exception as e:
+        st.error(f"Could not plot confusion matrix: {str(e)}")
 
+    try:
         # Classification Report
         st.subheader("Classification Report")
         st.dataframe(report_df.style.background_gradient(cmap='Blues'))
+    except Exception as e:
+        st.error(f"Could not display classification report: {str(e)}")
 
-        st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-        # JavaScript to handle the toggle
-        st.markdown("""
-        <script>
-        function toggleDevResults() {
-            var devResults = document.getElementById('dev-results');
-            if (devResults.style.display === 'none') {
-                devResults.style.display = 'block';
-            } else {
-                devResults.style.display = 'none';
-            }
+    # JavaScript to handle the toggle
+    st.markdown("""
+    <script>
+    function toggleDevResults() {
+        var devResults = document.getElementById('dev-results');
+        if (devResults.style.display === 'none') {
+            devResults.style.display = 'block';
+        } else {
+            devResults.style.display = 'none';
         }
-        </script>
-        """, unsafe_allow_html=True)
-except Exception as e:
-    st.error(f"Error displaying developer results: {str(e)}")
+    }
+    </script>
+    """, unsafe_allow_html=True)
