@@ -95,6 +95,9 @@ st.markdown("""
         background-color: #e8f5e9;
         border-left: 5px solid #2a9d8f;
     }
+    #dev-results {
+        display: none;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -107,7 +110,7 @@ uploaded_file = st.file_uploader("Choose an X-ray image...", type=["jpg", "jpeg"
 if uploaded_file is not None and model is not None:
     # Display the uploaded image
     image = Image.open(uploaded_file).convert('RGB')
-    st.image(image, caption='Uploaded X-ray', use_container_width=True)  # Updated parameter
+    st.image(image, caption='Uploaded X-ray', use_container_width=True)
     
     # Preprocess the image
     img = image.resize((256, 256))
@@ -143,21 +146,18 @@ if uploaded_file is not None and model is not None:
             **Note:** This is an AI-assisted diagnosis tool. Always consult with a healthcare professional 
             for medical diagnosis and treatment.
             """)
-            
-    except Exception as e:
-        st.error(f"Error making prediction: {str(e)}")
 
 # Developer section
 if roc_data is not None and conf_matrix is not None and report_df is not None:
     st.markdown(
-        '<div class="developer-section" onclick="document.getElementById(\'dev-results\').style.display=\'block\'">'
+        '<div class="developer-section" onclick="toggleDevResults()">'
         '👨💻 Developer Results</div>', 
         unsafe_allow_html=True
     )
 
-    # Hidden developer results (initially hidden)
-    st.markdown('<div id="dev-results" style="display:none">', unsafe_allow_html=True)
-
+    # Hidden developer results (initially hidden via CSS)
+    st.markdown('<div id="dev-results">', unsafe_allow_html=True)
+    
     try:
         # ROC Curve with your saved format
         st.subheader("ROC Curve")
@@ -197,16 +197,16 @@ if roc_data is not None and conf_matrix is not None and report_df is not None:
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # Add custom JavaScript to handle the developer section toggle
+    # JavaScript to handle the toggle
     st.markdown("""
     <script>
-        document.querySelector('.developer-section').addEventListener('click', function() {
-            var devResults = document.getElementById('dev-results');
-            if (devResults.style.display === 'none') {
-                devResults.style.display = 'block';
-            } else {
-                devResults.style.display = 'none';
-            }
-        });
+    function toggleDevResults() {
+        var devResults = document.getElementById('dev-results');
+        if (devResults.style.display === 'none') {
+            devResults.style.display = 'block';
+        } else {
+            devResults.style.display = 'none';
+        }
+    }
     </script>
     """, unsafe_allow_html=True)
