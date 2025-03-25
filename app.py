@@ -148,46 +148,41 @@ if uploaded_file is not None and model is not None:
             for medical diagnosis and treatment.
             """)
 
-# Developer section toggle button
-if roc_data is not None and conf_matrix is not None and report_df is not None:
-    if st.button("👨💻 Developer Results"):
-        st.session_state.show_dev_results = not st.session_state.show_dev_results
+# Developer section
+try:
+    if roc_data is not None and conf_matrix is not None and report_df is not None:
+        # Developer results toggle button
+        if st.button("👨💻 Developer Results"):
+            st.session_state.show_dev_results = not st.session_state.show_dev_results
 
-# Developer results section (only shown if toggled)
-if st.session_state.show_dev_results:
-    try:
-        # ROC Curve
-        st.subheader("ROC Curve")
-        plt.figure(figsize=(10, 8))
-        plt.plot(roc_data["fpr"], roc_data["tpr"], 
-                label=f'ROC Curve (AUC = {roc_data["roc_auc"]:.2f})', 
-                color='blue')
-        plt.plot([0, 1], [0, 1], linestyle='--', color='gray')
-        plt.xlim([0.0, 1.0])
-        plt.ylim([0.0, 1.05])
-        plt.xlabel('False Positive Rate')
-        plt.ylabel('True Positive Rate')
-        plt.title('Receiver Operating Characteristic (ROC) Curve')
-        plt.legend(loc="lower right")
-        st.pyplot(plt)
-    except Exception as e:
-        st.error(f"Could not plot ROC curve: {str(e)}")
+        # Developer results section (only shown if toggled)
+        if st.session_state.show_dev_results:
+            # ROC Curve
+            st.subheader("ROC Curve")
+            plt.figure(figsize=(10, 8))
+            plt.plot(roc_data["fpr"], roc_data["tpr"], 
+                    label=f'ROC Curve (AUC = {roc_data["roc_auc"]:.2f})', 
+                    color='blue')
+            plt.plot([0, 1], [0, 1], linestyle='--', color='gray')
+            plt.xlim([0.0, 1.0])
+            plt.ylim([0.0, 1.05])
+            plt.xlabel('False Positive Rate')
+            plt.ylabel('True Positive Rate')
+            plt.title('Receiver Operating Characteristic (ROC) Curve')
+            plt.legend(loc="lower right")
+            st.pyplot(plt)
 
-    try:
-        # Confusion Matrix
-        st.subheader("Confusion Matrix")
-        plt.figure()
-        sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', 
-                   xticklabels=['Predicted Normal', 'Predicted Pneumonia'],
-                   yticklabels=['Actual Normal', 'Actual Pneumonia'])
-        plt.title('Confusion Matrix')
-        st.pyplot(plt)
-    except Exception as e:
-        st.error(f"Could not plot confusion matrix: {str(e)}")
+            # Confusion Matrix
+            st.subheader("Confusion Matrix")
+            plt.figure()
+            sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', 
+                       xticklabels=['Predicted Normal', 'Predicted Pneumonia'],
+                       yticklabels=['Actual Normal', 'Actual Pneumonia'])
+            plt.title('Confusion Matrix')
+            st.pyplot(plt)
 
-    try:
-        # Classification Report
-        st.subheader("Classification Report")
-        st.dataframe(report_df.style.background_gradient(cmap='Blues'))
-    except Exception as e:
-        st.error(f"Could not display classification report: {str(e)}")
+            # Classification Report
+            st.subheader("Classification Report")
+            st.dataframe(report_df.style.background_gradient(cmap='Blues'))
+except Exception as e:
+    st.error(f"Error displaying developer results: {str(e)}")
