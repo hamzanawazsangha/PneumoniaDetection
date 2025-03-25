@@ -148,17 +148,17 @@ if uploaded_file is not None and model is not None:
             """)
 
 # Developer section
-if roc_data is not None and conf_matrix is not None and report_df is not None:
-    st.markdown(
-        '<div class="developer-section" onclick="toggleDevResults()">'
-        '👨💻 Developer Results</div>', 
-        unsafe_allow_html=True
-    )
+try:
+    if roc_data is not None and conf_matrix is not None and report_df is not None:
+        st.markdown(
+            '<div class="developer-section" onclick="toggleDevResults()">'
+            '👨💻 Developer Results</div>', 
+            unsafe_allow_html=True
+        )
 
-    # Hidden developer results (initially hidden via CSS)
-    st.markdown('<div id="dev-results">', unsafe_allow_html=True)
-    
-    try:
+        # Hidden developer results (initially hidden via CSS)
+        st.markdown('<div id="dev-results">', unsafe_allow_html=True)
+        
         # ROC Curve with your saved format
         st.subheader("ROC Curve")
         plt.figure(figsize=(10, 8))
@@ -173,11 +173,8 @@ if roc_data is not None and conf_matrix is not None and report_df is not None:
         plt.title('Receiver Operating Characteristic (ROC) Curve')
         plt.legend(loc="lower right")
         st.pyplot(plt)
-    except Exception as e:
-        st.error(f"Could not plot ROC curve: {str(e)}")
 
-    # Confusion Matrix
-    try:
+        # Confusion Matrix
         st.subheader("Confusion Matrix")
         plt.figure()
         sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', 
@@ -185,28 +182,25 @@ if roc_data is not None and conf_matrix is not None and report_df is not None:
                    yticklabels=['Actual Normal', 'Actual Pneumonia'])
         plt.title('Confusion Matrix')
         st.pyplot(plt)
-    except Exception as e:
-        st.error(f"Could not plot confusion matrix: {str(e)}")
 
-    # Classification Report
-    try:
+        # Classification Report
         st.subheader("Classification Report")
         st.dataframe(report_df.style.background_gradient(cmap='Blues'))
-    except Exception as e:
-        st.error(f"Could not display classification report: {str(e)}")
 
-    st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
-    # JavaScript to handle the toggle
-    st.markdown("""
-    <script>
-    function toggleDevResults() {
-        var devResults = document.getElementById('dev-results');
-        if (devResults.style.display === 'none') {
-            devResults.style.display = 'block';
-        } else {
-            devResults.style.display = 'none';
+        # JavaScript to handle the toggle
+        st.markdown("""
+        <script>
+        function toggleDevResults() {
+            var devResults = document.getElementById('dev-results');
+            if (devResults.style.display === 'none') {
+                devResults.style.display = 'block';
+            } else {
+                devResults.style.display = 'none';
+            }
         }
-    }
-    </script>
-    """, unsafe_allow_html=True)
+        </script>
+        """, unsafe_allow_html=True)
+except Exception as e:
+    st.error(f"Error displaying developer results: {str(e)}")
